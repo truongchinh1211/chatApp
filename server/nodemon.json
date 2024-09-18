@@ -1,0 +1,5 @@
+{
+    "watch": ["bin/www", "routes/", "app.js","Controller/"],
+    "ext": "js",
+    "exec": "node bin/www"
+  }
