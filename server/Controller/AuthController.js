@@ -24,7 +24,7 @@ exports.register = async(req,res)=>{
         const user = await User.create(payload)
 
         return res.status(201).json({
-            message:"register success",
+            message:"register successful",
             data: {
                 user,
             }
@@ -43,10 +43,10 @@ exports.login = async(req,res)=>{
             return res.status(400).json("Please fill all the required field!")
         const user =await User.findOne({email})
         if(!user)
-            return res.status(401).json("invalid email or password")
+            return res.status(400).json("wrong username or password")
         const verifiedPassword =await bcryptjs.compare(password,user.password)
         if(!verifiedPassword)
-            return res.status(401).json("invalid email or password")
+            return res.status(400).json("wrong username or password")
         const token = jwt.sign(
             {
                 id: user._id,
@@ -56,7 +56,7 @@ exports.login = async(req,res)=>{
         user.password = undefined
 
         return res.status(200).json({
-            message:"login success",
+            message:"login successful",
             token,
             data:{
                 user
@@ -80,18 +80,39 @@ exports.getUserInfo = async(req,res)=>{
 exports.updateUserInfo = async(req,res)=>{
     try{
         const user = req.user
-        const {name, email, profilePic} = req.body
-        if(!name || !email)
+        const {name, gender, dob} = req.body
+        if(!name || !gender || !dob)
             return res.status(400).json("Please fill all the required field!")
-        const verifiedEmail = await User.findOne({email})
-        if(verifiedEmail)
-            return res.status(401).json("email has exist")
         const updatedUser = await User.findOneAndUpdate(
             {email:user.email},
             {$set:{
-                email:email,
                 name:name,
-                profilePic:profilePic
+                gender:gender,
+                dob:dob,
+            }},
+            {new:true}
+        )
+        if(!updatedUser)
+            return res.status(401).json("Error has occur")
+        return res.status(200).json({
+            message:"updating success",
+            data:{updatedUser}
+        })
+    }catch(error){
+        return res.status(500).json({ error: error })
+    }
+}
+
+exports.setAvatar = async(req,res)=>{
+    try{
+        const user = req.user
+        const {profilePic} = req.body
+        if(!profilePic)
+            return res.status(400).json("profile picture isn't exist!")
+        const updatedUser = await User.findOneAndUpdate(
+            {email:user.email},
+            {$set:{
+                profilePic:profilePic,
             }},
             {new:true}
         )

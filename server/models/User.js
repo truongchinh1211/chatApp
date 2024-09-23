@@ -19,6 +19,14 @@ var userSchema = new mongoose.Schema({
     profilePic:{
         type:String,
         default:""
+    },
+    gender:{
+        type:String,
+        default:""
+    },
+    dob:{
+        type:Date,
+        default:null
     }
 },{
     timestamps: true

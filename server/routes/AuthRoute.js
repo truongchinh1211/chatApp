@@ -7,5 +7,5 @@ router.post('/register',AuthController.register)
 router.post('/login',AuthController.login)
 router.get('/user-info',TokenHandler.verifyToken,AuthController.getUserInfo)
 router.post('/user-info',TokenHandler.verifyToken,AuthController.updateUserInfo)
-
+router.post('/set-avatar',TokenHandler.verifyToken, AuthController.setAvatar)
 module.exports = router;
