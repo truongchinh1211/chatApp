@@ -4,7 +4,7 @@ import { baseQueryWithReauth } from './customFetchBase'
 import { createApi} from "@reduxjs/toolkit/query/react"
 
 export const authApi = createApi({
-    reducerPath: "api",
+    reducerPath: "authApi",
     baseQuery: baseQueryWithReauth,
     tagTypes: ["user"],
     endpoints: (builder) => {
@@ -23,7 +23,8 @@ export const authApi = createApi({
                         queryFulfilled
                         .then((data)=>{
                             localStorage.setItem('token',data.data.token)})
-                        .catch((error)=>{error})
+                            .catch((er)=>{
+                                toast.error(er.error.data)})
                 },
             }),
 

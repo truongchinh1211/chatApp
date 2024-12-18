@@ -14,7 +14,7 @@ function ProfilePage() {
     const [avatarUrl, setAvatarUrl] = useState("")
     const [isLoading,setIsLoading] = useState(false)
 
-    const {data} = useGetUserQuery()
+    const {data} = useGetUserQuery(null, { skip: !localStorage.getItem('token') })
     const [updateUserMutation] = useUpdateUserMutation()
     const [setAvatar] = useSetAvatarMutation()
 
@@ -47,7 +47,7 @@ function ProfilePage() {
         if (isNaN(selectedDate.getTime()) || dobValue === '' || selectedDate > today) {
             setErrors((prev) => ({ ...prev, dob: 'Ngày sinh không hợp lệ (không được sau hôm nay)' }));
         } else {
-            setErrors((prev) => ({ ...prev, dob: undefined })); // Xóa lỗi nếu hợp lệ
+            setErrors((prev) => ({ ...prev, dob: undefined }));
         }
     }
     const validateName = () => {

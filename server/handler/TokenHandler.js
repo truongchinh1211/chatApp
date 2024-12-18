@@ -14,13 +14,20 @@ const TokenDecode = req => {
     }
   };
 
-exports.verifyToken = async(req,res,next) => {
-    const decodedToken = TokenDecode(req)
-    if(!decodedToken)
-        return res.status(401).json("decoding token failed")
-    const user = await User.findById(decodedToken.id)
-    if(!user)
-        return res.status(401).json("Unathorized")
-    req.user = user
-    next()
-}
+  exports.verifyToken = async (req, res, next) => {
+    try {
+        const decodedToken = TokenDecode(req);
+        if (!decodedToken) {
+            return res.status(401).json("Decoding token failed");
+        }
+
+        const user = await User.findById(decodedToken.id);
+        if (!user) {
+            return res.status(401).json("Unauthorized");
+        }
+        req.user = user
+        next()
+    } catch (error) {
+        return res.status(500).json("Internal server error");
+    }
+};

@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
 import Avatar from '../Avatar';
+import { Link } from 'react-router-dom';
 function AccountItem({ children = [] }) {
     return (
         <>
         {children.map((item) => (
-        <div key = {item.id}
-         className='flex flex-row items-center cursor-pointer px-4 py-2 hover:bg-slate-300'>
+        <Link to={'/'+item._id} key = {item._id}
+         className='flex flex-row items-center px-4 py-2 hover:bg-slate-300'>
                 <span className='w-[40px] h-[40px] rounded-full overflow-hidden me-2'>
                 <Avatar
                     avatar={item.profilePic}
@@ -22,7 +23,7 @@ function AccountItem({ children = [] }) {
                         
                     </div>
                 </div>
-        </div>
+        </Link>
         ))}
             
         </>

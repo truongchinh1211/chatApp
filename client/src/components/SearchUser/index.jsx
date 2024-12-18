@@ -35,7 +35,7 @@ function SearchUser({ onClose }) {
                     ) : searchKey === '' ? (
                         <p>No users found.</p>
                     ) : results.length > 0 ? (
-                        <AccountItem>{results}</AccountItem>
+                        <AccountItem onClose={onClose} >{results}</AccountItem>
                     ) : (
                         <p>No users found.</p>
                     )}

@@ -19,7 +19,6 @@ function Login() {
         console.log(data)
         toast.success(data.message)
         navigate('/')})
-      .catch((er)=>toast.error(er.data))
     }
   }
     return ( <>

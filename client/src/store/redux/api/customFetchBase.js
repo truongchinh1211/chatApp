@@ -1,5 +1,4 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query'
-import {refreshToken } from '../features/authSlice'
 import { Mutex } from 'async-mutex'
 import { toast } from 'react-toastify'
 
@@ -40,11 +39,10 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         try {
           const refreshResult = await baseQueryWithAuth('/refreshToken', api, extraOptions)
           if (refreshResult.data) {
-            // localStorage.setItem('token', refreshResult.data.token)
-            api.dispatch(refreshToken(refreshResult.data.token))
+            localStorage.setItem('token', refreshResult.data.token)
             result = await baseQueryWithAuth(args, api, extraOptions)
           } else {
-            // localStorage.removeItem('token')
+            localStorage.removeItem('token')
             toast.warning('có lỗi xảy ra!! Vui lòng đăng nhập lại')
             window.location.reload()
           }

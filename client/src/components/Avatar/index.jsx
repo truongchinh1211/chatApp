@@ -1,12 +1,14 @@
 import Image from "../Image"
 import defaultAvt from "../../assets/images/default-avatar.jfif"
 import PropTypes from 'prop-types'
+import { useSelector } from "react-redux"
 
 
 function Avatar({avatar, className}) {
+    const onlineUser = useSelector(state=>state.onlineUser.onlineUser)
     const avatarPic = avatar?avatar:defaultAvt
     return ( 
-        <span className={`w-[40px] h-[40px] rounded-full overflow-hidden ${className}`}
+        <span className={`size-[40px] rounded-full overflow-hidden ${className}`}
         >
                 <Image 
                     src={avatarPic}

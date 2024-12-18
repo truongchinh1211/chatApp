@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 
+const { User } = require('../models');
+const jwt = require('jsonwebtoken')
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
@@ -20,6 +22,34 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+
+/**
+ * Setup Socket.IO
+ */
+
+const { Server } = require('socket.io');
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Authorization', 'Content-Type'],
+        credentials: true,
+    },
+});
+const onlineUser = new Set()
+io.on('connection', async(socket) => {
+    const token = socket.handshake.auth.token
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET_KEY)
+    const userId = decoded.id
+    const user = await User.findById(userId)
+    socket.join(user?.email)
+    onlineUser.add(user?.email)
+    io.emit('onlineUser',Array.from(onlineUser))
+    socket.on('disconnect', () => {
+        console.log('disconnect user', socket.id);
+    });
+});
 
 /**
  * Listen on provided port, on all network interfaces.

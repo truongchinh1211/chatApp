@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Image from "../../components/Image";
 import logo from '../../assets/images/logo-no-background.svg'
-import SearchUser from "../../components/SearchUser";
+import { useDispatch } from "react-redux";
 function HomePage() {
     const[selectedUser,setSelectedUser] = useState(null)
     const[users,setUsers] = useState([])

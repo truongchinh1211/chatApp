@@ -3,20 +3,21 @@ import { baseQueryWithReauth } from './customFetchBase'
 import { createApi} from "@reduxjs/toolkit/query/react"
 
 export const userApi = createApi({
-    reducerPath: "api",
+    reducerPath: "userApi",
     baseQuery: baseQueryWithReauth,
     tagTypes: ["user"],
     endpoints: (builder) => {
         return {
             getUser: builder.query({
                 query: () => {
-                    return {
-                        url: "/user/user-info",
-                        method: "GET",
-                    }
+                  console.log("getUser is called");
+                  return {
+                    url: "/user/user-info",
+                    method: "GET",
+                  }
                 },
                 providesTags: () => [{ type: 'User', id: 'USER_INFO' }],
-            }),
+              }),
             updateUser: builder.mutation({
                 query: userData => {
                     return{
@@ -30,7 +31,7 @@ export const userApi = createApi({
             setAvatar: builder.mutation({
                 query: userData => {
                     return{
-                        url: "/auth/set-avatar",
+                        url: "/user/set-avatar",
                         method: "POST",
                         body: userData
                     }
