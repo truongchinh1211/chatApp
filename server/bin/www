@@ -27,7 +27,6 @@ var server = http.createServer(app);
 /**
  * Setup Socket.IO
  */
-
 const { Server } = require('socket.io');
 const io = new Server(server, {
     cors: {
@@ -36,19 +35,40 @@ const io = new Server(server, {
         allowedHeaders: ['Authorization', 'Content-Type'],
         credentials: true,
     },
-});
-const onlineUser = new Set()
+})
+
+app.set('socketio', io)
+
+const onlineUsers = new Map()
 io.on('connection', async(socket) => {
     const token = socket.handshake.auth.token
+    if (!token) {
+      socket.disconnect()
+      return
+  }
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET_KEY)
     const userId = decoded.id
     const user = await User.findById(userId)
-    socket.join(user?.email)
-    onlineUser.add(user?.email)
-    io.emit('onlineUser',Array.from(onlineUser))
+    if (!user) {
+      socket.disconnect()
+      return;
+  }
+    if (!onlineUsers.has(user.email)) {
+        onlineUsers.set(user.email, new Set())
+    }
+    onlineUsers.get(user.email).add(socket.id)
+    io.emit('onlineUser', Array.from(onlineUsers.keys()))
     socket.on('disconnect', () => {
-        console.log('disconnect user', socket.id);
-    });
+      console.log('User disconnected:', socket.id);
+
+      const userSockets = onlineUsers.get(user.email)
+      userSockets.delete(socket.id)
+      if (userSockets.size === 0) {
+          onlineUsers.delete(user.email);
+      }
+
+      io.emit('onlineUser', Array.from(onlineUsers.keys()))
+  })
 });
 
 /**

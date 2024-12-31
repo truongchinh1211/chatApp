@@ -19,6 +19,7 @@ function Login() {
         console.log(data)
         toast.success(data.message)
         navigate('/')})
+        
     }
   }
     return ( <>

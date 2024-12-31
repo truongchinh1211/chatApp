@@ -1,10 +1,12 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 import { Mutex } from 'async-mutex'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 
 const mutex = new Mutex()
 const baseUrl = import.meta.env.VITE_API_URL
+
 
 const baseQuery = fetchBaseQuery({
   baseUrl:baseUrl,
@@ -43,8 +45,6 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
             result = await baseQueryWithAuth(args, api, extraOptions)
           } else {
             localStorage.removeItem('token')
-            toast.warning('có lỗi xảy ra!! Vui lòng đăng nhập lại')
-            window.location.reload()
           }
         } finally {
           release()
