@@ -5,7 +5,7 @@ function AccountItem({ children = [] }) {
     return (
         <>
         {children.map((item) => (
-        <Link to={'/'+item._id} key = {item._id}
+        <div key = {item._id}
          className='flex flex-row items-center px-4 py-2 hover:bg-slate-300'>
                 <span className='w-[40px] h-[40px] rounded-full overflow-hidden me-2'>
                 <Avatar
@@ -23,7 +23,7 @@ function AccountItem({ children = [] }) {
                         
                     </div>
                 </div>
-        </Link>
+        </div>
         ))}
             
         </>

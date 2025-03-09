@@ -1,5 +1,5 @@
 import { useNavigate,Link } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useLoginMutation } from "../../../store/redux/api/authApi";
 import { toast } from "react-toastify";
 function Login() {
@@ -7,6 +7,10 @@ function Login() {
   const navigate = useNavigate()
   const emailInput = useRef('')
   const passwordInput = useRef('')
+  useEffect(()=>{
+    if(localStorage.getItem('token'))
+      navigate('/')
+  })
   const handleLogin = async(e)=>{
     e.preventDefault()
     if(emailInput.current && passwordInput.current){

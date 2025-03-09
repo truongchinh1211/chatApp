@@ -5,10 +5,12 @@ import { useEffect } from "react";
 
 function PrivateRouteComponent() {
     const { data, error, isLoading } = useGetUserQuery();
+    const token = localStorage.getItem('token')
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
-    if (error) {
+    if (error || !token ) {
         return <Navigate to="/auth/login" />;
     }
     return data ? <Outlet /> : <Navigate to="/auth/login" />;

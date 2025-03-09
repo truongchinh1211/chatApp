@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRegisterMutation } from "../../../store/redux/api/authApi";
 import { useNavigate,Link  } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,6 +10,10 @@ function Register() {
     const nameInput = useRef('')
     const passwordInput = useRef('')
     const rePasswordInput = useRef('')
+    useEffect(()=>{
+    if(localStorage.getItem('token'))
+        navigate('/')
+    })
     const handleRegister = async (event) => {
         event.preventDefault();
     
