@@ -31,7 +31,10 @@ function SearchUser({ onClose }) {
                     ) : searchKey === '' ? (
                         <p>Type something to search for users.</p>
                     ) : results.length > 0 ? (
-                        <AccountItem onClose={onClose} >{results}</AccountItem>
+                         results.map((item => (
+                            <AccountItem key={item._id} item = {item} />
+                         )))
+                        // <AccountItem >{results}</AccountItem>
                     ) : (
                         <p>No users found.</p>
                     )}

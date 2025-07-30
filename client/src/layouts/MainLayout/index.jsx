@@ -1,26 +1,35 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/SideBar";
-import { useEffect } from "react";
-import { io } from "socket.io-client";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef } from "react";
+import { useDispatch} from "react-redux";
 import { setOnlineUser } from "../../store/redux/features/OnlineUserSlice";
+import { useSocket } from "../../Socket/useSocket";
+
 
 function MainLayout() {
     const dispatch = useDispatch()
-    useEffect(()=>{
-        const socketConnection = io(import.meta.env.VITE_SOCKET_URL,{
-            auth: {
-                token: localStorage.getItem('token'),
-            }
+    const socket = useSocket()
+    useEffect(() => {
+        if (!socket) return;
+    
+        socket.on('connect', () => {
+          console.log('Socket connected', socket.id)
         })
-        socketConnection.on('onlineUser',(data)=>{
-            console.log(data)
+    
+        socket.on('disconnect', () => {
+          console.log('Socket disconnected')
+        })
+        socket.on('onlineUser',(data)=>{
             dispatch(setOnlineUser(data))
         })
-        return()=>{
-            socketConnection.disconnect()
+    
+        return () => {
+          socket.off('connect');
+          socket.off('disconnect');
         }
-    },[dispatch])
+      }, [socket,dispatch])
+
+
     return ( 
     <>
     <div className="flex flex-row">

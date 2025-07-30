@@ -1,20 +1,22 @@
 import { BiSolidMessageRoundedDetail } from "react-icons/bi";
 import { HiUserAdd } from "react-icons/hi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 import Avatar from "../Avatar";
 import { useState } from "react";
-import { useGetUserQuery } from "../../store/redux/api/userApi";
+import { useGetUserQuery, } from "../../store/redux/api/userApi";
 import SearchUser from "../SearchUser";
+import { useLogoutMutation } from "../../store/redux/api/authApi";
 
 
 function Sidebar() {
     const [showLogoutModal, setShowLogoutModal] = useState(false)
     const {data} = useGetUserQuery()
+    const [logoutMutation] = useLogoutMutation()
     const [searchUserModal,setSearchUserModal] = useState(false)
+    const navigate = useNavigate()
     const handleLogout = ()=>{
-        localStorage.removeItem('token')
-        window.location.reload()
+        logoutMutation().then(()=>{navigate('/auth/login')})
     }
     let avatar=''
     if(data){

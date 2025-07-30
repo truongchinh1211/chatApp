@@ -33,7 +33,7 @@ function Register() {
                 name,
                 password,
             };
-            await registerMutation(data).unwrap().then(()=>navigate('/'))
+            await registerMutation(data).unwrap().then(()=>navigate('/auth/login'))
         }
 
     }

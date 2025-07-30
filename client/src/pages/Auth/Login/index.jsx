@@ -2,6 +2,7 @@ import { useNavigate,Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useLoginMutation } from "../../../store/redux/api/authApi";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 function Login() {
   const [loginMutation] = useLoginMutation()
   const navigate = useNavigate()
@@ -20,10 +21,9 @@ function Login() {
       }
       loginMutation(data).unwrap()
       .then((data)=>{
-        console.log(data)
+
         toast.success(data.message)
         navigate('/')})
-        
     }
   }
     return ( <>

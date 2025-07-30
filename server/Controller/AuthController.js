@@ -41,29 +41,61 @@ exports.login = async(req,res)=>{
         const {email, password} = req.body
         if (!email || !password)
             return res.status(400).json("Please fill all the required field!")
-        const user =await User.findOne({email})
+        let user =await User.findOne({email})
         if(!user)
             return res.status(400).json("wrong username or password")
         const verifiedPassword =await bcryptjs.compare(password,user.password)
         if(!verifiedPassword)
             return res.status(400).json("wrong username or password")
-        const token = jwt.sign(
-            {
-                id: user._id,
-            },
-            process.env.TOKEN_SECRET_KEY,
-        )
-        user.password = undefined
-
+        const accessToken = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET_KEY,{ expiresIn: '15m' })
+        const refreshToken = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET_KEY,{ expiresIn: '7d' })
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+        user.refreshToken=refreshToken
+        await user.save()
+        user = user.toObject()
+        delete user.refreshToken
+        delete user.password
         return res.status(200).json({
             message:"login successful",
-            token,
+            token:accessToken,
             data:{
                 user
             }
         })
     }catch(error){
-        return res.status(500).json({ error: "Internal Server Error" })
+        console.error('Login error:', error)
+        return res.status(500).json(error)
     }
 }
 
+
+exports.logout = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken
+  
+    if (!refreshToken) {
+      return res.sendStatus(204)
+    }
+  
+    try {
+      await User.updateOne(
+        { refreshToken },
+        { $unset: { refreshToken: "" } }
+      )
+  
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      })
+  
+      return res.status(200).json({ message: 'Logged out successfully' })
+    } catch (error) {
+      console.error('Logout error:', error)
+      res.sendStatus(500)
+    }
+}

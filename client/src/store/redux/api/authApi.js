@@ -2,6 +2,8 @@
 import {toast} from 'react-toastify'
 import { baseQueryWithReauth } from './customFetchBase'
 import { createApi} from "@reduxjs/toolkit/query/react"
+import {  setCredentials } from '../features/authSlice'
+
 
 export const authApi = createApi({
     reducerPath: "authApi",
@@ -19,12 +21,14 @@ export const authApi = createApi({
                 },
                 
                 invalidatesTags: [{ type: 'User', id: 'USER_INFO' }],
-                async onQueryStarted(args,{queryFulfilled}){ 
-                        queryFulfilled
-                        .then((data)=>{
-                            localStorage.setItem('token',data.data.token)})
-                            .catch((er)=>{
-                                toast.error(er.error.data)})
+                async onQueryStarted(args,{queryFulfilled,  dispatch}){ 
+                    try{
+                        const { data } = await queryFulfilled
+                        localStorage.setItem('token',data.token)
+                        dispatch(setCredentials(data.token))
+                    }catch(er){
+                        toast.error(er.error.data)
+                    }
                 },
             }),
 
@@ -38,18 +42,34 @@ export const authApi = createApi({
                 },
                 async onQueryStarted(args,{queryFulfilled}){
                     try{
-                        queryFulfilled
-                        .then(()=>toast.success('Đăng ký tài khoản thành công!!'))
-                        .catch((er)=>{
-                            toast.error(er.error.data)})
+                        await queryFulfilled
+                        toast.success('Đăng ký tài khoản thành công!!')
                     }catch(er){
-                        console.log(er)
+                        toast.error(er.error.data)
                     }
                 }
             }),
+
+            logout:builder.mutation({
+                query:()=>({
+                    url: "auth/logout",
+                    method: "POST",
+                }),
+
+                async onQueryStarted(args, { queryFulfilled }) {
+                    try {
+                        await queryFulfilled
+                        localStorage.removeItem("token")
+                        toast.success("Đăng xuất thành công!")
+                    } catch (er) {
+                        toast.error(er?.error?.data || "Lỗi khi đăng xuất")
+                    }
+                },
+                invalidatesTags: [{ type: 'User', id: 'USER_INFO' }],
+            })
         
         }
     }
 })
 
-export const {useLoginMutation, useRegisterMutation} = authApi
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation} = authApi

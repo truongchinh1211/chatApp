@@ -27,6 +27,10 @@ var userSchema = new mongoose.Schema({
     dob:{
         type:Date,
         default:null
+    },
+    refreshToken:{
+        type:String,
+        default:""
     }
 },{
     timestamps: true
